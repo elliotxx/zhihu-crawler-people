@@ -1,77 +1,34 @@
 ## zhihu_crawler_windows
 
-知乎爬虫，windows版本，使用 mongodb 和 redis
+一个简单的分布式知乎爬虫，抓取知乎用户个人信息。
 
-### Redis 设计
+使用该爬虫做的数据分析：[大数据报告：知乎百万用户分析](http://yangyingming.com/article/389/)
+
+该分布式爬虫的源码解析：[如何写一个简单的分布式知乎爬虫？](http://www.yangyingming.com/article/392/)
+
+### 依赖
+* BeautifulSoup
+* pymongo
+* redis
+* requests
+
+### 分布式爬虫架构
 
 redis 中设置五个集合：**待抓取节点集合** 和 **个人信息抓取成功节点集合** 和 **个人信息抓取失败节点集合** 和 **列表抓取成功节点集合** 和 **列表抓取失败节点集合**。
 
 它们在 Redis 中分别命名为 **waiting / info\_success / info\_failed / list\_success / list\_failed**。
 
 它们的关系为：
-```
-waiting --> info_success --> success
-        `-> info_failed  `-> failed
-```
+![](http://www.yangyingming.com/uploads/markdownx/2017/7/c4595153-977e-4ee0-b5a7-217c31157ce2.png)
 
 **个人信息抓取进程** 从 待抓取节点集合 中随机取出一个节点，抓取该节点代表的用户信息。如果抓取成功，加入 个人信息抓取成功节点集合，如果抓取失败，加入 个人信息抓取失败节点集合。
 
 **列表抓取进程** 从 个人信息抓取成功节点集合 中随机取出一个节点，抓取该节点的 follower 列表。如果抓取成功，加入 列表抓取成功节点集合，如果抓取失败，加入 列表抓取失败节点集合。
 
-### 爬虫进程流程图
-![爬虫进程流程图](./screenshots/爬虫进程流程图.png)
+整个分布式架构采用 **主从结构**：主机维护的数据库，配合从机的 info_crawler 和 list_crawler 爬虫程序，便可以循环起来：info_crawler 不断从 waiting 集合中获取节点，抓取个人信息，存入数据库；list_crawler 不断的补充 waiting 集合。
 
-
-### 常用命令
-* linux 启动 Redis  
-```nohup redis-server redis.conf > /dev/null 2>&1 &```
-
-* windows 备份 mongodb 数据到本地  
-```mongodump -h localhost -d zhihu_crawler -o d:\temp```
-
-* windows 恢复本地 mongodb 数据到远程主机  
-```mongorestore.exe -h 60.205.212.2:27017 -d zhihu_crawler -directoryperdb d:\temp\zhihu_crawler```
-
-* mongodb 修改数据库名称  
-```
-use admin;
-db.runCommand({renameCollection: "irectoryperdb.peoples", to: "zhihu_crawler.peoples"});
-```
-
-* 远程连接 redis  
-```redis-cli -h 60.205.212.2 -p 6379```
-
-* mongodb 去重数据插入到新集合 shell 脚本
-```
-//待去重的集合 和 去重后的新集合
-var CollectionName = 'peoples_201707121519'
-var collection = db.getCollection(CollectionName)
-var collection_distinct = db.getCollection(CollectionName + '_distinct')
-//得到去重后的数组（只显示一个字段）
-var arr = collection.distinct('urlToken');
-print('去重前数据量:' + collection.count() + '\t去重后数据量:' + arr.length)
-//将去重后的数据插入到新的集合中
-for(var i in arr){
-    print('正在插入第 ' + i +' 条去重数据')
-    //取出完整数据
-    var obj = collection.findOne({'urlToken':arr[i]})
-    //插入到新集合中
-    collection_distinct.insert(obj)
-}
-```
-如果上一个脚本因为数据集太大处理不了，可以采用下面这个脚本：
-```
-//待去重的集合 和 去重后的新集合
-var CollectionName = 'peoples'
-var collection = db.getCollection(CollectionName)
-var collection_distinct = db.getCollection(CollectionName + '_distinct')
-//得到去重后的数组（只显示一个字段）
-var cursor = collection.find();
-cursor.forEach(function(item){
-    var obj = collection.findOne({'urlToken':item.urlToken})
-    collection_distinct.insert(obj)
-})
-```
+主机和从机的关系如下图：
+![](http://www.yangyingming.com/uploads/markdownx/2017/7/b08b1bc1-36a0-46a9-a844-3def95e249f1.png)
 
 ### 参考资料
 Python操作redis（python client 操作）  
