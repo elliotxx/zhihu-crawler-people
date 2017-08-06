@@ -16,10 +16,13 @@ list_failed_set  = 'list_failed'    # 列表抓取失败节点集合
 host = 'https://www.zhihu.com'		# 主页面
 
 # 数据库设置
-redis_host = 'your_ip'			# redis 主机地址
+redis_host = 'your_ip'				# redis 主机地址
 redis_port = 6379					# redis 主机端口
-mongo_host = 'your_ip'			# mongodb 主机地址
+# redis_pwd  = 'your_password'		# redis 访问密码
+mongo_host = 'your_ip'				# mongodb 主机地址
 mongo_port = 27017					# mongodb 主机端口
+# mongo_user = 'your_user'			# mongodb 登陆用户
+# mongo_pwd  = 'your_password'		# mongodb 用户密码
 
 
 def printx(s):

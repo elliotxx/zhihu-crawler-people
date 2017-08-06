@@ -27,6 +27,8 @@ def Init():
 	# 初始化：数据库、socket 超时时间
 	# 连接 mongo 数据库
 	mongo_client = pymongo.MongoClient(mongo_host,mongo_port)
+	# 连接 mongo 数据库（使用用户名密码）
+	# mongo_client = pymongo.MongoClient('mongodb://%s:%s@%s:%d'%(mongo_user,mongo_pwd,mongo_host,mongo_port))
 
 	# 切换 mongo 数据库
 	mongo_db = mongo_client.zhihu_crawler
@@ -36,6 +38,8 @@ def Init():
 
 	# 连接 redis 数据库
 	redis_client = redis.Redis(host=redis_host,port=redis_port,db=0)
+	# 连接 redis 数据库（使用访问密码）
+	# redis_client = redis.Redis(host=redis_host,port=redis_port,password=redis_pwd,db=0)
 
 	# 设置 socket 超时时间
 	socket.setdefaulttimeout(socket_timeout)
