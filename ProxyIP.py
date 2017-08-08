@@ -5,7 +5,7 @@ import requests
 import random
 
 class ProxyIP():
-	host = 'http://your_proxy_pool_ip:8000'					# 代理池请求位置
+	host = 'http://your_proxy_pool_ip:8000'					# 代理池请求IP
 	ip_pool = []										# 代理池 
 
 	def __init__(self):
