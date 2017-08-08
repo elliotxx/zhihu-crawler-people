@@ -15,7 +15,7 @@
 ### 安装
 * 搭建主机数据库：MongoDB + Redis。
 * 搭建代理池 [qiyeboy/IPProxyPool](https://github.com/qiyeboy/IPProxyPool)
-* 修改 common.py 18行，配置数据库。如果你设置了权限认证，那么请把注释去掉，配置认证信息。
+* 修改 common.py 18行，配置数据库。如果你设置了权限认证，那么请修改注释部分的认证信息，并去掉注释。
 ```
 # 数据库设置
 redis_host = 'your_ip'          # redis 主机地址
@@ -30,7 +30,7 @@ mongo_port = 27017              # mongodb 主机端口
 ```
   host = 'http://your_proxy_pool_ip:8000' # 代理池请求IP
 ```
-* 如果你设置了数据库的权限认证，那么把 info_crawler.py、list_crawler.py、test_speed.py 中 Init() 函数中权限认证的注释去掉。
+* 如果你设置了数据库的权限认证，那么请将 info_crawler.py、list_crawler.py、test_speed.py 中 Init() 函数的连接数据库部分替换成注释中的代码。
 
 ### 分布式爬虫架构
 
