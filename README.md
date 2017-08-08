@@ -12,6 +12,26 @@
 * redis
 * requests
 
+### 安装
+* 搭建主机数据库：MongoDB + Redis。
+* 搭建代理池 [qiyeboy/IPProxyPool](https://github.com/qiyeboy/IPProxyPool)
+* 修改 common.py 18行，配置数据库。如果你设置了权限认证，那么请把注释去掉，配置认证信息。
+```
+# 数据库设置
+redis_host = 'your_ip'          # redis 主机地址
+redis_port = 6379               # redis 主机端口
+# redis_pwd  = 'your_password'	# redis 访问密码
+mongo_host = 'your_ip'          # mongodb 主机地址
+mongo_port = 27017              # mongodb 主机端口
+# mongo_user = 'your_user'      # mongodb 登陆用户
+# mongo_pwd  = 'your_password'  # mongodb 用户密码
+```
+* 修改 ProxyIP.py 8行，配置代理池请求IP。
+```
+  host = 'http://your_proxy_pool_ip:8000' # 代理池请求IP
+```
+* 如果你设置了数据库的权限认证，那么把 info_crawler.py、list_crawler.py、test_speed.py 中 Init() 函数中权限认证的注释去掉。
+
 ### 分布式爬虫架构
 
 redis 中设置五个集合：**待抓取节点集合** 和 **个人信息抓取成功节点集合** 和 **个人信息抓取失败节点集合** 和 **列表抓取成功节点集合** 和 **列表抓取失败节点集合**。
